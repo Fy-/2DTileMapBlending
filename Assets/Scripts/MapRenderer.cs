@@ -23,19 +23,22 @@ public class MapRenderer : MonoBehaviour
 		MapMesh mapMesh = new MapMesh(this.map);
 
 		foreach (KeyValuePair<TerrainType, MeshData> kv in mapMesh.meshes) {
-			MeshData meshData = kv.Value;
-			TerrainType terrainType = kv.Key;
-
-			GameObject go = new GameObject("Mesh "+terrainType.ToString());
+			MeshData meshData = kv.Value; // It's just easier to read, you don't need to do this.
+			TerrainType terrainType = kv.Key; // It's just easier to read, you don't need to do this.
+			GameObject go = new GameObject("Mesh for "+terrainType.ToString());
 			go.transform.SetParent(this.transform);
-			go.transform.localPosition = new Vector3(0, 0, -(int)terrainType);
 
+			// In our TerrainType enum Water=0, Dirt=1, Grass=2, Rocks=3
+			// We always want to draw Rocks over Grass, Grass over Dirt, Dirt over Water
+			// So we can just use the negative integer value as the Z position for the GameObject.
+			go.transform.localPosition = new Vector3(0, 0, -(int)terrainType); 
+
+			// Add a mesh filter and set the mesh to our mesh.
 			MeshFilter mf = go.AddComponent<MeshFilter>();
 			mf.mesh = meshData.mesh;
 
-			MeshRenderer mr = go.AddComponent<MeshRenderer>();
-			mr.material = Res.mats[terrainType.ToString()];
-			
+		    MeshRenderer mr = go.AddComponent<MeshRenderer>();
+      		mr.material = Res.mats[terrainType.ToString()];	
 		}
 
 		this.ready = true;
